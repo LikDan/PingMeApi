@@ -38,7 +38,10 @@ fun createUser(user: User): User? {
 fun authUser(call: ApplicationCall): User? {
     val token = call.request.cookies[authTokenName] ?: return null
 
-    return usersCollection.findOne(User::token eq token)
+    val user = usersCollection.findOne(User::token eq token)
+    if (user?.token == null) return null
+
+    return user
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.login() {
@@ -93,7 +96,12 @@ suspend fun PipelineContext<*, ApplicationCall>.deleteUser() {
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.revokeUserToken() {
+    val user = authUser(call) ?: return
+
     call.response.cookies.append(authTokenName, "", maxAge = -1L)
+
+    usersCollection.updateOneById(user.id, SetTo(User::token, null))
+
     call.respond("ok")
 }
 
