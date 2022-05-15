@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Api</title>
+    <style>
+        .method {
+            text-align: center;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+<table style="border-spacing: 15px">
+    <thead>
+    <tr>
+        <th>Host</th>
+        <th>Method</th>
+        <th>Description</th>
+        <th>Params</th>
+        <th>Required cookies</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td>/api/user</td>
+        <td style="background-color: blue;" class="method">GET</td>
+        <td>Get current user</td>
+        <td>-</td>
+        <td>authToken</td>
+    </tr>
+    <tr>
+        <td>/api/user</td>
+        <td style="background-color: orange" class="method">PUT</td>
+        <td>Update current user</td>
+        <td>Name -> String (>2), Password -> String (>8), Login -> String</td>
+        <td>authToken</td>
+    </tr>
+    <tr>
+        <td>/api/user</td>
+        <td style="background-color: red" class="method">DELETE</td>
+        <td>Delete current user</td>
+        <td>-</td>
+        <td>authToken</td>
+    </tr>
+    <tr>
+        <td>/api/user/revoke</td>
+        <td style="background-color: red" class="method">DELETE</td>
+        <td>Delete cookies and token from db</td>
+        <td>-</td>
+        <td>authToken</td>
+    </tr>
+    <tr>
+        <td>/api/user/login</td>
+        <td style="background-color: limegreen" class="method">POST</td>
+        <td>Login user</td>
+        <td>Name -> String, Password -> String</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>/api/user/singUp</td>
+        <td style="background-color: limegreen" class="method">POST</td>
+        <td>Create new user</td>
+        <td>Name -> String (>2), Password -> String (>8), Login -> String</td>
+        <td>-</td>
+    </tr>
+    <tr>
+        <td>/api/user/{id}</td>
+        <td style="background-color: blue" class="method">GET</td>
+        <td>Get user by id</td>
+        <td>id -> String</td>
+        <td>-</td>
+    </tr>
+    </tbody>
+</table>
+</body>
+</html>
