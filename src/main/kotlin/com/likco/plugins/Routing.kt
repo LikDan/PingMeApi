@@ -1,5 +1,6 @@
 package com.likco.plugins
 
+import com.likco.routes.monitors
 import com.likco.routes.users
 import io.ktor.server.application.*
 import io.ktor.server.response.*
@@ -13,6 +14,7 @@ fun Application.configureRouting() {
 
         route("api") {
             users()
+            monitors()
         }
     }
 }
