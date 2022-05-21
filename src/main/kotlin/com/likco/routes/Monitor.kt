@@ -10,4 +10,7 @@ fun Route.monitors() = route("monitors") {
     get("{id}") { getMonitor() }
     put("{id}") { editMonitor() }
     delete("{id}") { deleteMonitor() }
+
+    post("{id}/start") { actionMonitor(true) }
+    post("{id}/stop") { actionMonitor(false) }
 }

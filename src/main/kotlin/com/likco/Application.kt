@@ -9,6 +9,7 @@ fun main() {
         configureContentNegotiation()
         configureCallLogging()
         configureMongoDb()
+        configureUptime()
         configureRouting()
     }.start(wait = true)
 }

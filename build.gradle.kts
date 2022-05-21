@@ -44,4 +44,6 @@ dependencies {
     implementation("org.litote.kmongo:kmongo:4.6.0")
     implementation("org.litote.kmongo:kmongo-coroutine:4.5.1")
     implementation("org.litote.kmongo:kmongo-id-serialization:4.6.0")
+
+    implementation("org.quartz-scheduler:quartz:2.3.2")
 }

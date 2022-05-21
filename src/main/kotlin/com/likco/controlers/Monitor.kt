@@ -1,6 +1,7 @@
 package com.likco.controlers
 
 import com.likco.models.Monitor
+import com.likco.models.Uptime
 import com.likco.plugins.monitorsCollection
 import io.ktor.server.application.*
 import io.ktor.server.request.*
@@ -12,9 +13,8 @@ import org.litote.kmongo.id.toId
 
 fun validateMonitor(monitor: Monitor): Boolean {
     val urlRegex = Regex("^(http://|https://).*+$")
-    val intervalRegex = Regex("\\d{1,4}")
 
-    return monitor.host.matches(urlRegex) && monitor.interval.matches(intervalRegex)
+    return monitor.host.matches(urlRegex) && monitor.interval / 100 < 1
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.getMonitors() {
@@ -28,6 +28,8 @@ suspend fun PipelineContext<*, ApplicationCall>.createMonitor() {
     val user = authUser(call) ?: return
     val monitor = call.receiveOrNull<Monitor>() ?: return
     if (!validateMonitor(monitor)) return
+
+    Uptime.new(monitor.id, monitor.userId ?: return)
 
     monitor.userId = user.id
     monitor.events = emptyList()
@@ -53,18 +55,21 @@ suspend fun PipelineContext<*, ApplicationCall>.editMonitor() {
     val id = call.parameters["id"] ?: return
     if (!ObjectId.isValid(id)) return
 
-    val newMonitor = call.receiveOrNull<Monitor>() ?: return
+    var newMonitor = call.receiveOrNull<Monitor>() ?: return
     if (!validateMonitor(newMonitor)) return
 
-    newMonitor.userId = user.id
-    newMonitor.id = ObjectId(id).toId()
-    newMonitor.events = emptyList()
-
     monitorsCollection.updateOne(
-        and(Monitor::id eq newMonitor.id, Monitor::userId eq newMonitor.userId),
+        and(Monitor::id eq ObjectId(id).toId(), Monitor::userId eq user.id),
         SetTo(Monitor::name, newMonitor.name),
+        SetTo(Monitor::host, newMonitor.host),
+        SetTo(Monitor::method, newMonitor.method),
+        SetTo(Monitor::body, newMonitor.body),
+        SetTo(Monitor::headers, newMonitor.headers),
+        SetTo(Monitor::cookies, newMonitor.cookies),
+        SetTo(Monitor::interval, newMonitor.interval),
     )
 
+    newMonitor = monitorsCollection.findOneById(ObjectId(id)) ?: return
     call.respond(newMonitor)
 }
 
@@ -74,6 +79,18 @@ suspend fun PipelineContext<*, ApplicationCall>.deleteMonitor() {
     if (!ObjectId.isValid(id)) return
 
     monitorsCollection.deleteOne(and(Monitor::id eq ObjectId(id).toId(), Monitor::userId eq user.id))
+
+    call.respond(id)
+}
+
+suspend fun PipelineContext<*, ApplicationCall>.actionMonitor(running: Boolean) {
+    val user = authUser(call) ?: return
+    val id = call.parameters["id"] ?: return
+    if (!ObjectId.isValid(id)) return
+
+    val uptime = Uptime.uptimes[ObjectId(id).toId()] ?: return
+    if (uptime.userId != user.id) return
+    uptime.running = running
 
     call.respond(id)
 }

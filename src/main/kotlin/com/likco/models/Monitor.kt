@@ -14,7 +14,7 @@ data class Monitor(
     val body: String = "",
     val headers: List<Pair<String, String>> = emptyList(),
     val cookies: List<Pair<String, String>> = emptyList(),
-    val interval: String,
+    val interval: Int,
     var events: List<String> = emptyList(),
     @Contextual var userId: Id<User>? = null,
     @Contextual @BsonId var id: Id<Monitor> = newId(),
