@@ -1,5 +1,10 @@
 package com.likco.models
 
+import com.github.kittinunf.fuel.core.FuelManager
+import com.github.kittinunf.fuel.core.Method
+import com.github.kittinunf.fuel.core.Parameters
+import com.github.kittinunf.fuel.httpGet
+import com.github.kittinunf.result.Result
 import com.likco.plugins.monitorsCollection
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
@@ -27,7 +32,24 @@ class Uptime(private val id: Id<Monitor>, val userId: Id<User>, var running: Boo
     suspend fun run() {
         coroutineScope {
             scheduledEventFlow.onEach {
-                println("Check status for $id (${it?.host})")
+                if (it == null) return@onEach
+
+                val httpAsync = FuelManager().request(Method.valueOf(it.method), it.host, null)
+                    .responseString { request, response, result ->
+                        when (result) {
+                            is Result.Failure -> {
+                                val ex = result.getException()
+                                println(ex)
+                            }
+                            is Result.Success -> {
+                                val data = result.get()
+                                println(result.value)
+                            }
+                        }
+                    }
+
+                httpAsync.join()
+                println("Check status for $id (${it.host})")
             }.launchIn(this)
         }
     }

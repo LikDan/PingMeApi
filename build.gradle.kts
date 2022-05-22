@@ -22,6 +22,7 @@ application {
 
 repositories {
     mavenCentral()
+    maven { url = uri("https://jitpack.io") }
     maven { url = uri("https://maven.pkg.jetbrains.space/public/p/ktor/eap") }
 }
 
@@ -46,4 +47,8 @@ dependencies {
     implementation("org.litote.kmongo:kmongo-id-serialization:4.6.0")
 
     implementation("org.quartz-scheduler:quartz:2.3.2")
+
+    implementation("com.github.kittinunf.fuel:fuel:2.3.1")
+    implementation("com.github.kittinunf.fuel:fuel-coroutines:2.3.1")
+    implementation("com.github.kittinunf.fuel:fuel-kotlinx-serialization:2.3.1")
 }
