@@ -1,21 +1,36 @@
 package com.likco.controlers
 
 import io.ktor.server.application.*
+import io.ktor.server.request.*
 import io.ktor.server.response.*
+import io.ktor.util.*
 import io.ktor.util.pipeline.*
 
-suspend fun PipelineContext<*, ApplicationCall>.testGet() {
-    call.respond("This is get request")
-}
+suspend fun PipelineContext<*, ApplicationCall>.bindTest() {
+    fun string(number: Int, value: String) = buildString {
+        appendLine()
+        for (i in 0..number) append(value)
+        appendLine()
+    }
 
-suspend fun PipelineContext<*, ApplicationCall>.testPost() {
-    call.respond("This is post request")
-}
+    fun Map<*, *>.normalize() =
+        toList().joinToString("\n", string(25, "*"), string(25, "*")) { "${it.first}: ${it.second}" }
 
-suspend fun PipelineContext<*, ApplicationCall>.testPut() {
-    call.respond("This is put request")
-}
+    call.respond(
+        """
+This is ${call.request.httpMethod.value} request with:
 
-suspend fun PipelineContext<*, ApplicationCall>.testDelete() {
-    call.respond("This is delete request")
+body:
+'${call.receiveText()}'
+
+query params:
+${call.request.queryParameters.toMap().normalize()}
+
+headers:
+${call.request.headers.toMap().normalize()}
+
+cookies:
+${call.request.cookies.rawCookies.normalize()}
+        """.trimIndent()
+    )
 }
