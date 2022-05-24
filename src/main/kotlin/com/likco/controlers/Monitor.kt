@@ -14,7 +14,7 @@ import org.litote.kmongo.id.toId
 fun validateMonitor(monitor: Monitor): Boolean {
     val urlRegex = Regex("^(http://|https://).*+$")
 
-    return monitor.host.matches(urlRegex) && monitor.interval / 100 < 1
+    return monitor.host.matches(urlRegex) && monitor.interval <= 86_400 //1 day (interval in seconds)
 }
 
 suspend fun PipelineContext<*, ApplicationCall>.getMonitors() {
